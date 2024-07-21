@@ -16,7 +16,7 @@ services:
   backend:
     depends_on:
       - postgres
-    image: nnnpooh/preflight-backend:latest
+    image: putterbs/preflight-backend:latest
     container_name: g4-backend
     ports:
       - ${PORT}:3000
@@ -31,7 +31,7 @@ services:
   frontend:
     depends_on:
       - backend
-    image: nnnpooh/preflight-frontend:latest
+    image: putterbs/preflight-frontend:latest
     container_name: g4-frontend
     ports:
       - ${NGINX_PORT}:5173

@@ -5,6 +5,8 @@ import { todoTable } from "@db/schema";
 async function insertData() {
   await dbClient.insert(todoTable).values({
     todoText: "Finish reading",
+    dueDate: "2024-07-21",
+    location: "A"
   });
   dbConn.end();
 }
