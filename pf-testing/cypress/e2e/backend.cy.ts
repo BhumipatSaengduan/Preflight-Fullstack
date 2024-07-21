@@ -39,11 +39,13 @@ describe("Backend", () => {
       url: `${url}/todo`,
       body: {
         todoText: "New Todo",
+        dueDate: "2024-12-31",
+        location: "Location A",
       },
     }).then((res) => {
       cy.log(JSON.stringify(res.body));
       expect(res.body).to.have.all.keys("msg", "data");
-      expect(res.body.data).to.all.keys("id", "todoText");
+      expect(res.body.data).to.all.keys("id", "todoText", "dueDate", "location");
     });
   });
 
@@ -55,6 +57,8 @@ describe("Backend", () => {
       url: `${url}/todo`,
       body: {
         todoText: "New Todo",
+        dueDate: "2024-12-31",
+        location: "Location A",
       },
     }).then((res) => {
       const todo = res.body.data;
@@ -80,6 +84,8 @@ describe("Backend", () => {
       url: `${url}/todo`,
       body: {
         todoText: "New Todo",
+        dueDate: "2024-12-31",
+        location: "Location B",
       },
     }).then((res) => {
       const todo = res.body.data;
@@ -90,6 +96,8 @@ describe("Backend", () => {
         body: {
           id: todo.id,
           todoText: "Updated Text",
+          dueDate: "2025-01-01",
+          location: "Location Z",
         },
       }).then((res) => {
         cy.request({
@@ -101,6 +109,8 @@ describe("Backend", () => {
           const todos = res.body;
           const todo = todos.find((el) => el.id === currentId);
           expect(todo.todoText).to.equal("Updated Text");
+          expect(todo.dueDate).to.equal("2025-01-01");
+          expect(todo.location).to.equal("Location Z");
         });
       });
     });
