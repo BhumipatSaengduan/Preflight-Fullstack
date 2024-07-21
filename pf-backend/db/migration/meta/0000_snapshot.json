@@ -1,5 +1,5 @@
 {
-  "id": "828598e0-330b-4774-a562-966d4664c490",
+  "id": "b3634607-90e1-4a00-bfe6-df1894cb1192",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -27,6 +27,18 @@
           "primaryKey": false,
           "notNull": false,
           "default": false
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",

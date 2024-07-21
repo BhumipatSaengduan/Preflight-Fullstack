@@ -4,7 +4,9 @@ import { type TodoItem } from "./types";
 import dayjs from "dayjs";
 function App() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [inputText, setInputText] = useState("");
+  const [titleText, setTitleText] = useState("");
+  const [dueDateText, setDueDateText] = useState("");
+  const [locationText, setLocationText] = useState("");
   const [mode, setMode] = useState<"ADD" | "EDIT">("ADD");
   const [curTodoId, setCurTodoId] = useState("");
 
@@ -17,21 +19,37 @@ function App() {
     fetchData();
   }, []);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setInputText(e.target.value);
+  function handleTitleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTitleText(e.target.value);
+  }
+
+  function handleDueDateInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setDueDateText(e.target.value);
+  }
+
+  function handleLocationInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setLocationText(e.target.value);
   }
 
   function handleSubmit() {
-    if (!inputText) return;
+    if (!titleText) return;
+    if (!dueDateText) return;
+    if (!locationText) return;
     if (mode === "ADD") {
       axios
         .request({
           url: "/api/todo",
           method: "put",
-          data: { todoText: inputText },
+          data: {
+            todoText: titleText,
+            dueDate: dueDateText,
+            location: locationText,
+          },
         })
         .then(() => {
-          setInputText("");
+          setTitleText("");
+          setDueDateText("");
+          setLocationText("");
         })
         .then(fetchData)
         .catch((err) => alert(err));
@@ -40,10 +58,17 @@ function App() {
         .request({
           url: "/api/todo",
           method: "patch",
-          data: { id: curTodoId, todoText: inputText },
+          data: {
+            id: curTodoId,
+            todoText: titleText,
+            dueDate: dueDateText,
+            location: locationText,
+          },
         })
         .then(() => {
-          setInputText("");
+          setTitleText("");
+          setDueDateText("");
+          setLocationText("");
           setMode("ADD");
           setCurTodoId("");
         })
@@ -58,14 +83,18 @@ function App() {
       .then(fetchData)
       .then(() => {
         setMode("ADD");
-        setInputText("");
+        setTitleText("");
+        setDueDateText("");
+        setLocationText("");
       })
       .catch((err) => alert(err));
   }
 
   function handleCancel() {
     setMode("ADD");
-    setInputText("");
+    setTitleText("");
+    setDueDateText("");
+    setLocationText("");
     setCurTodoId("");
   }
   return (
@@ -74,20 +103,64 @@ function App() {
         <h1>Todo App</h1>
       </header>
       <main>
-        <div style={{ display: "flex", alignItems: "start" }}>
-          <input type="text" onChange={handleChange} value={inputText} data-cy="input-text"/>
-          <button onClick={handleSubmit} data-cy="submit">
-            {mode === "ADD" ? "Submit" : "Update"}
-          </button>
-          {mode === "EDIT" && (
-            <button onClick={handleCancel} className="secondary">
-              Cancel
+        <div
+          style={{ display: "flex", flexDirection: "column", width: "auto" }}
+        >
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <label style={{ fontSize: "1.25rem", marginRight: "0.5rem" }}>
+              Title:
+            </label>
+            <input
+              style={{ fontSize: "1rem", height: "2.25rem" }}
+              type="text"
+              onChange={handleTitleInputChange}
+              value={titleText}
+              data-cy="input-text"
+            />
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <label style={{ fontSize: "1.25rem", marginRight: "0.5rem" }}>
+              Due&nbsp;Date:
+            </label>
+            <input
+              style={{ padding: "0.5rem", height: "2.25rem" }}
+              type="date"
+              onChange={handleDueDateInputChange}
+              value={dueDateText}
+              data-cy="due-date-input-text"
+            />
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <label style={{ fontSize: "1.25rem", marginRight: "0.5rem" }}>
+              Location:
+            </label>
+            <input
+              style={{ padding: "0.5rem", height: "2.25rem" }}
+              type="text"
+              onChange={handleLocationInputChange}
+              value={locationText}
+              data-cy="location-input-text"
+            />
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button onClick={handleSubmit} data-cy="submit">
+              {mode === "ADD" ? "Submit" : "Update"}
             </button>
-          )}
+            {mode === "EDIT" && (
+              <button
+                onClick={handleCancel}
+                className="secondary"
+                style={{ marginLeft: "0.5rem" }}
+              >
+                Cancel
+              </button>
+            )}
+          </div>
         </div>
         <div data-cy="todo-item-wrapper">
           {todos.sort(compareDate).map((item, idx) => {
             const { date, time } = formatDateTime(item.createdAt);
+            const { date: dueDate } = formatDateTime(item.dueDate);
             const text = item.todoText;
             return (
               <article
@@ -101,12 +174,16 @@ function App() {
                 <div>📅{date}</div>
                 <div>⏰{time}</div>
                 <div data-cy='todo-item-text'>📰{text}</div>
+                <div data-cy='todo-item-due-date'>❌{dueDate}</div>
+                <div data-cy='todo-item-location'>📍{item.location}</div>
                 <div
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     setMode("EDIT");
                     setCurTodoId(item.id);
-                    setInputText(item.todoText);
+                    setTitleText(item.todoText);
+                    setDueDateText(item.dueDate);
+                    setLocationText(item.location);
                   }}
                   data-cy="todo-item-update"
                 >

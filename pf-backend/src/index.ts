@@ -34,13 +34,19 @@ app.get("/todo", async (req, res, next) => {
 app.put("/todo", async (req, res, next) => {
   try {
     const todoText = req.body.todoText ?? "";
+    const dueDate = req.body.dueDate ?? "";
+    const location = req.body.location ?? "";
     if (!todoText) throw new Error("Empty todoText");
+    if (!dueDate) throw new Error("Empty dueDate");
+    if (!location) throw new Error("Empty location");
     const result = await dbClient
       .insert(todoTable)
       .values({
         todoText,
+        dueDate,
+        location
       })
-      .returning({ id: todoTable.id, todoText: todoTable.todoText });
+      .returning({ id: todoTable.id, todoText: todoTable.todoText, dueDate: todoTable.dueDate, location: todoTable.location });
     res.json({ msg: `Insert successfully`, data: result[0] });
   } catch (err) {
     next(err);
@@ -52,7 +58,11 @@ app.patch("/todo", async (req, res, next) => {
   try {
     const id = req.body.id ?? "";
     const todoText = req.body.todoText ?? "";
+    const dueDate = req.body.dueDate ?? "";
+    const location = req.body.location ?? "";
     if (!todoText || !id) throw new Error("Empty todoText or id");
+    if (!dueDate) throw new Error("Empty dueDate");
+    if (!location) throw new Error("Empty location");
 
     // Check for existence if data
     const results = await dbClient.query.todoTable.findMany({
@@ -62,9 +72,9 @@ app.patch("/todo", async (req, res, next) => {
 
     const result = await dbClient
       .update(todoTable)
-      .set({ todoText })
+      .set({ todoText, dueDate, location })
       .where(eq(todoTable.id, id))
-      .returning({ id: todoTable.id, todoText: todoTable.todoText });
+      .returning({ id: todoTable.id, todoText: todoTable.todoText, dueDate: todoTable.dueDate, location: todoTable.location });
     res.json({ msg: `Update successfully`, data: result });
   } catch (err) {
     next(err);
