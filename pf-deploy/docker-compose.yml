@@ -39,7 +39,7 @@ services:
       - g4-net
     environment:
       - NGINX_PROXY=${NGINX_PROXY}
-      - NGINX_PORT=${NGINX_PORT}
+      - NGINX_PORT=5173
 volumes:
   g4-data:
 networks:
