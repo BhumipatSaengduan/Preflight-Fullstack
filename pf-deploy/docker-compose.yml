@@ -34,12 +34,12 @@ services:
     image: putterbs/preflight-frontend:latest
     container_name: g4-frontend
     ports:
-      - ${NGINX_PORT}:5173
+      - ${NGINX_PORT}:${NGINX_PORT}
     networks:
       - g4-net
     environment:
       - NGINX_PROXY=${NGINX_PROXY}
-      - NGINX_PORT=5173
+      - NGINX_PORT=${NGINX_PORT}
 volumes:
   g4-data:
 networks:
